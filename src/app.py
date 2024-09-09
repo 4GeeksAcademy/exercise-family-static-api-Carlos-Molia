@@ -34,9 +34,40 @@ def handle_hello():
         "hello": "world",
         "family": members
     }
-
-
+    
     return jsonify(response_body), 200
+
+@app.route('/member', methods=['POST'])
+def add_member():
+    new_member = request.json
+    jackson_family.add_member(new_member)
+
+    return jsonify({"done":  "usuario creado"}), 200
+
+@app.route('/member/<int:member_id>', methods=['DELETE'])
+def delete_family_member(member_id):
+    eliminar_familiar = jackson_family.delete_member(member_id)
+    if not eliminar_familiar:
+        return jsonify({"msg" : "Familiar no encontrado"}), 400
+    
+    return jsonify({"done" : "Familiar eliminado"}), 200
+
+@app.route('/member/<int:member_id>', methods=['PUT'])
+def update_family_member(member_id):
+    new_member = request.json
+    updated_member = jackson_family.update_member(member_id, new_member)
+    if not updated_member:
+        return jsonify({"msg" : "No se encontró familiar"}), 400
+    
+    return jsonify({"done" : "miembro actualizado"}), 200
+
+@app.route('/member/<int:member_id>', methods=['GET'])
+def get_one_member(member_id):
+    found_member = jackson_family.get_member(member_id)
+    if not found_member:
+        return jsonify({"msg" : "No se encontró familiar"}), 400
+    
+    return jsonify(found_member), 200
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
